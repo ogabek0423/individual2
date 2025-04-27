@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+    <meta charset="UTF-8">
+    <title>Yangi Ustoz Qo‘shish</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 40px;
+            background-color: #f1f1f1;
+        }
+        h1 {
+            color: #333;
+        }
+        form {
+            background-color: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+        }
+        label {
+            display: block;
+            margin-top: 15px;
+            font-weight: bold;
+        }
+        input {
+            width: 100%;
+            padding: 8px;
+            margin-top: 5px;
+            border-radius: 5px;
+            border: 1px solid #ccc;
+        }
+        button {
+            margin-top: 20px;
+            padding: 10px 20px;
+            background-color: #28a745;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+
+    <h1>➕ Yangi Ustoz Qo‘shish</h1>
+
+    <form id="createUstozForm">
+        <label for="ism">Ism:</label>
+        <input type="text" id="ism" name="ism" required>
+
+        <label for="familiya">Familiya:</label>
+        <input type="text" id="familiya" name="familiya" required>
+
+        <label for="mutaxassislik">Mutaxassislik:</label>
+        <input type="text" id="mutaxassislik" name="mutaxassislik" required>
+
+        <label for="yosh">Yosh:</label>
+        <input type="number" id="yosh" name="yosh" required>
+
+        <label for="daraja">Daraja:</label>
+        <input type="text" id="daraja" name="daraja" required>
+
+        <button type="submit">Saqlash</button>
+    </form>
+
+    <script>
+        document.getElementById('createUstozForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+
+            const yangiUstoz = {
+                ism: document.getElementById('ism').value,
+                familiya: document.getElementById('familiya').value,
+                mutaxassislik: document.getElementById('mutaxassislik').value,
+                yosh: document.getElementById('yosh').value,
+                daraja: document.getElementById('daraja').value,
+            };
+
+            try {
+                const response = await fetch('http://127.0.0.1:8000/api/ustozlar/', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(yangiUstoz),
+                });
+
+                if (response.ok) {
+                    alert('✅ Ustoz muvaffaqiyatli qo‘shildi!');
+                    window.location.href = 'ustozlar.html';
+                } else {
+                    alert('❌ Xatolik: Ustoz qo‘shilmadi.');
+                }
+            } catch (error) {
+                console.error('Xatolik:', error);
+            }
+        });
+    </script>
+
+</body>
+</html>

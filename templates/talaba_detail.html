@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+    <meta charset="UTF-8">
+    <title>Talaba Tafsilotlari</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 40px;
+            background-color: #f9f9f9;
+        }
+        h1 {
+            color: #333;
+        }
+        form {
+            background-color: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+        }
+        label {
+            display: block;
+            margin-top: 15px;
+            font-weight: bold;
+        }
+        input, select {
+            width: 100%;
+            padding: 8px;
+            margin-top: 5px;
+            border-radius: 5px;
+            border: 1px solid #ccc;
+        }
+        button {
+            margin-top: 20px;
+            padding: 10px 20px;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+        }
+        .delete-btn {
+            background-color: #dc3545;
+        }
+    </style>
+</head>
+<body>
+
+    <h1>🎓 Talaba Tafsilotlari</h1>
+
+    <form id="talabaForm">
+        <label for="ism">Ism:</label>
+        <input type="text" id="ism" name="ism" required>
+
+        <label for="familiya">Familiya:</label>
+        <input type="text" id="familiya" name="familiya" required>
+
+        <label for="tugilgan_kun">Tug‘ilgan sana:</label>
+        <input type="date" id="tugilgan_kun" name="tugilgan_kun" required>
+
+        <label for="fakultet">Fakultet:</label>
+        <select id="fakultet" name="fakultet" required></select>
+
+        <label for="guruh">Guruh:</label>
+        <select id="guruh" name="guruh" required></select>
+
+        <label for="rasm">Rasm:</label>
+        <input type="file" id="rasm" name="rasm">
+
+        <label for="talim_shakli">Talim shakli:</label>
+        <select id="talim_shakli" name="talim_shakli" required></select>
+
+        <label for="talim_turi">Talim turi:</label>
+        <select id="talim_turi" name="talim_turi" required></select>
+
+        <label for="nomdor_stipendiya">Nomdor stipendiya:</label>
+        <select id="nomdor_stipendiya" name="nomdor_stipendiya"></select>
+
+        <label for="telefon">Telefon raqami:</label>
+        <input type="text" id="telefon" name="telefon" required>
+
+        <button type="submit">Yangilash</button>
+        <button type="button" class="delete-btn" onclick="deleteTalaba()">O'chirish</button>
+    </form>
+
+    <script>
+        const params = new URLSearchParams(window.location.search);
+        const talabaId = params.get('id');
+
+        async function loadTalaba() {
+            try {
+                const response = await fetch(`http://127.0.0.1:8000/api/talabalar/${talabaId}/`);
+                const talaba = await response.json();
+
+                document.getElementById('ism').value = talaba.ism;
+                document.getElementById('familiya').value = talaba.familiya;
+                document.getElementById('tugilgan_kun').value = talaba.tugilgan_kun;
+                document.getElementById('telefon').value = talaba.telefon;
+
+                // Fakultet, Guruh, Talim shakli va Talim turi uchun selectlarni to'ldirish
+                // Bu joyda kerakli idlar o'zgarishi mumkin
+
+                const fakultetSelect = document.getElementById('fakultet');
+                const fakultetOption = document.createElement('option');
+                fakultetOption.value = talaba.fakultet.id;
+                fakultetOption.textContent = talaba.fakultet.nomi;
+                fakultetSelect.appendChild(fakultetOption);
+
+                const guruhSelect = document.getElementById('guruh');
+                const guruhOption = document.createElement('option');
+                guruhOption.value = talaba.guruh.id;
+                guruhOption.textContent = talaba.guruh.nomi;
+                guruhSelect.appendChild(guruhOption);
+
+                const talimShakliSelect = document.getElementById('talim_shakli');
+                const talimShakliOption = document.createElement('option');
+                talimShakliOption.value = talaba.talim_shakli.id;
+                talimShakliOption.textContent = talaba.talim_shakli.nomi;
+                talimShakliSelect.appendChild(talimShakliOption);
+
+                const talimTuriSelect = document.getElementById('talim_turi');
+                const talimTuriOption = document.createElement('option');
+                talimTuriOption.value = talaba.talim_turi.id;
+                talimTuriOption.textContent = talaba.talim_turi.turi;
+                talimTuriSelect.appendChild(talimTuriOption);
+
+                const stipendiyaSelect = document.getElementById('nomdor_stipendiya');
+                if (talaba.nomdor_stipendiya) {
+                    const stipendiyaOption = document.createElement('option');
+                    stipendiyaOption.value = talaba.nomdor_stipendiya.id;
+                    stipendiyaOption.textContent = talaba.nomdor_stipendiya.nomi;
+                    stipendiyaSelect.appendChild(stipendiyaOption);
+                }
+
+            } catch (error) {
+                console.error('Xatolik:', error);
+            }
+        }
+
+        document.getElementById('talabaForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+
+            const updatedTalaba = {
+                ism: document.getElementById('ism').value,
+                familiya: document.getElementById('familiya').value,
+                tugilgan_kun: document.getElementById('tugilgan_kun').value,
+                fakultet: document.getElementById('fakultet').value,
+                guruh: document.getElementById('guruh').value,
+                talim_shakli: document.getElementById('talim_shakli').value,
+                talim_turi: document.getElementById('talim_turi').value,
+                nomdor_stipendiya: document.getElementById('nomdor_stipendiya').value,
+                telefon: document.getElementById('telefon').value,
+            };
+
+            try {
+                const response = await fetch(`http://127.0.0.1:8000/api/talabalar/${talabaId}/`, {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(updatedTalaba),
+                });
+
+                if (response.ok) {
+                    alert('✅ Talaba muvaffaqiyatli yangilandi!');
+                    window.location.href = 'talabalar.html';
+                } else {
+                    alert('❌ Xatolik: Talaba ma\'lumotlarini yangilashda muammo yuz berdi.');
+                }
+            } catch (error) {
+                console.error('Xatolik:', error);
+            }
+        });
+
+        async function deleteTalaba() {
+            if (confirm("Rostdan ham ushbu talaba ma'lumotlarini o'chirmoqchimisiz?")) {
+                try {
+                    const response = await fetch(`http://127.0.0.1:8000/api/talabalar/${talabaId}/`, {
+                        method: 'DELETE',
+                    });
+
+                    if (response.ok) {
+                        alert('✅ Talaba o\'chirildi!');
+                        window.location.href = 'talabalar.html';
+                    } else {
+                        alert('❌ Xatolik: Talabani o\'chirishda muammo yuz berdi.');
+                    }
+                } catch (error) {
+                    console.error('Xatolik:', error);
+                }
+            }
+        }
+
+        loadTalaba();
+    </script>
+
+</body>
+</html>

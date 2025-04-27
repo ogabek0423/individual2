@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+    <meta charset="UTF-8">
+    <title>Guruhlar</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 40px;
+            background-color: #f9f9f9;
+        }
+        h1 {
+            color: #333;
+        }
+        .top-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+        #searchBox {
+            width: 300px;
+            padding: 8px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+        button {
+            padding: 10px 20px;
+            background-color: #28a745;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #218838;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            background-color: white;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+        }
+        th, td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+        th {
+            background-color: #f2f2f2;
+        }
+        a.detail-link {
+            color: #007bff;
+            text-decoration: none;
+            font-weight: bold;
+        }
+        a.detail-link:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="top-bar">
+        <h1>📚 Guruhlar</h1>
+        <button onclick="window.location.href='guruh_create.html'">➕ Yangi guruh qo‘shish</button>
+    </div>
+
+    <input type="text" id="searchBox" placeholder="🔍 Qidiruv..." onkeyup="searchGuruh()">
+
+    <table id="guruhTable">
+        <thead>
+            <tr>
+                <th>Guruh nomi</th>
+                <th>Fakultet</th>
+                <th>Turi</th>
+                <th>Amallar</th>
+            </tr>
+        </thead>
+        <tbody>
+            <!-- Ma'lumotlar JS orqali yuklanadi -->
+        </tbody>
+    </table>
+
+    <script>
+        async function loadGuruhlar() {
+            try {
+                const response = await fetch('http://127.0.0.1:8000/api/guruhlar/');
+                const guruhlar = await response.json();
+
+                const tbody = document.querySelector('#guruhTable tbody');
+                tbody.innerHTML = '';
+
+                guruhlar.forEach(guruh => {
+                    const tr = document.createElement('tr');
+                    tr.innerHTML = `
+                        <td>${guruh.nomi}</td>
+                        <td>${guruh.fakultet}</td>
+                        <td>${guruh.turi}</td>
+                        <td><a class="detail-link" href="guruh_detail.html?id=${guruh.id}">Ko'rish</a></td>
+                    `;
+                    tbody.appendChild(tr);
+                });
+
+            } catch (error) {
+                console.error('Xatolik:', error);
+            }
+        }
+
+        function searchGuruh() {
+            const input = document.getElementById('searchBox').value.toLowerCase();
+            const rows = document.querySelectorAll('#guruhTable tbody tr');
+
+            rows.forEach(row => {
+                const text = row.textContent.toLowerCase();
+                row.style.display = text.includes(input) ? '' : 'none';
+            });
+        }
+
+        loadGuruhlar();
+    </script>
+
+</body>
+</html>

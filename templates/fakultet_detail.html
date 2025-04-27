@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+    <meta charset="UTF-8">
+    <title>Fakultet Tafsilotlari</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 40px;
+            background-color: #f1f1f1;
+        }
+        h1 {
+            color: #333;
+        }
+        form {
+            background-color: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+        }
+        label {
+            display: block;
+            margin-top: 15px;
+            font-weight: bold;
+        }
+        input {
+            width: 100%;
+            padding: 8px;
+            margin-top: 5px;
+            border-radius: 5px;
+            border: 1px solid #ccc;
+        }
+        button {
+            margin-top: 20px;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+        }
+        .update-btn {
+            background-color: #007bff;
+            color: white;
+        }
+        .delete-btn {
+            background-color: #dc3545;
+            color: white;
+            margin-left: 10px;
+        }
+    </style>
+</head>
+<body>
+
+    <h1>📚 Fakultet tafsilotlari</h1>
+
+    <form id="fakultetForm">
+        <label for="nomi">Fakultet nomi:</label>
+        <input type="text" id="nomi" name="nomi" required>
+
+        <label for="yaratilgan_sana">Yaratilgan sana:</label>
+        <input type="date" id="yaratilgan_sana" name="yaratilgan_sana" required>
+
+        <label for="dekan">Dekan:</label>
+        <input type="text" id="dekan" name="dekan" required>
+
+        <label for="zam_dekan">Zam. dekan:</label>
+        <input type="text" id="zam_dekan" name="zam_dekan" required>
+
+        <button type="submit" class="update-btn">Saqlash</button>
+        <button type="button" class="delete-btn" onclick="deleteFakultet()">O'chirish</button>
+    </form>
+
+    <script>
+        const params = new URLSearchParams(window.location.search);
+        const fakultetId = params.get('id');
+
+        async function loadFakultet() {
+            try {
+                const response = await fetch(`http://127.0.0.1:8000/api/fakultetlar/${fakultetId}/`);
+                const fakultet = await response.json();
+
+                document.getElementById('nomi').value = fakultet.nomi;
+                document.getElementById('yaratilgan_sana').value = fakultet.yaratilgan_sana;
+                document.getElementById('dekan').value = fakultet.dekan;
+                document.getElementById('zam_dekan').value = fakultet.zam_dekan;
+
+            } catch (error) {
+                console.error('Xatolik:', error);
+            }
+        }
+
+        document.getElementById('fakultetForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+
+            const updatedFakultet = {
+                nomi: document.getElementById('nomi').value,
+                yaratilgan_sana: document.getElementById('yaratilgan_sana').value,
+                dekan: document.getElementById('dekan').value,
+                zam_dekan: document.getElementById('zam_dekan').value,
+            };
+
+            try {
+                const response = await fetch(`http://127.0.0.1:8000/api/fakultetlar/${fakultetId}/`, {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(updatedFakultet),
+                });
+
+                if (response.ok) {
+                    alert('✅ Ma\'lumot saqlandi!');
+                    window.location.href = 'fakultetlar.html';
+                } else {
+                    alert('❌ Xatolik: Ma\'lumotni saqlashda muammo yuz berdi.');
+                }
+
+            } catch (error) {
+                console.error('Xatolik:', error);
+            }
+        });
+
+        async function deleteFakultet() {
+            if (confirm("Rostdan ham ushbu fakultetni o'chirmoqchimisiz?")) {
+                try {
+                    const response = await fetch(`http://127.0.0.1:8000/api/fakultetlar/${fakultetId}/`, {
+                        method: 'DELETE',
+                    });
+
+                    if (response.ok) {
+                        alert('✅ Fakultet o\'chirildi!');
+                        window.location.href = 'fakultetlar.html';
+                    } else {
+                        alert('❌ Xatolik: O\'chirishda muammo yuz berdi.');
+                    }
+                } catch (error) {
+                    console.error('Xatolik:', error);
+                }
+            }
+        }
+
+        loadFakultet();
+    </script>
+
+</body>
+</html>
+

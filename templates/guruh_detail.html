@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+    <meta charset="UTF-8">
+    <title>Guruh Tafsilotlari</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 40px;
+            background-color: #f9f9f9;
+        }
+        h1 {
+            color: #333;
+        }
+        form {
+            background-color: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+        }
+        label {
+            display: block;
+            margin-top: 15px;
+            font-weight: bold;
+        }
+        input, select {
+            width: 100%;
+            padding: 8px;
+            margin-top: 5px;
+            border-radius: 5px;
+            border: 1px solid #ccc;
+        }
+        button {
+            margin-top: 20px;
+            padding: 10px 20px;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+        }
+        .delete-btn {
+            background-color: #dc3545;
+        }
+    </style>
+</head>
+<body>
+
+    <h1>📚 Guruh Tafsilotlari</h1>
+
+    <form id="guruhForm">
+        <label for="nomi">Guruh nomi:</label>
+        <input type="text" id="nomi" name="nomi" required>
+
+        <label for="fakultet">Fakultet:</label>
+        <select id="fakultet" name="fakultet" required>
+            <!-- Fakultetlar JS orqali yuklanadi -->
+        </select>
+
+        <label for="turi">Guruh turi:</label>
+        <input type="text" id="turi" name="turi" required>
+
+        <button type="submit">Yangilash</button>
+        <button type="button" class="delete-btn" onclick="deleteGuruh()">O'chirish</button>
+    </form>
+
+    <script>
+        const params = new URLSearchParams(window.location.search);
+        const guruhId = params.get('id');
+
+        async function loadGuruh() {
+            try {
+                const response = await fetch(`http://127.0.0.1:8000/api/guruhlar/${guruhId}/`);
+                const guruh = await response.json();
+
+                document.getElementById('nomi').value = guruh.nomi;
+                document.getElementById('turi').value = guruh.turi;
+
+                const fakultetSelect = document.getElementById('fakultet');
+                const fakultetOption = document.createElement('option');
+                fakultetOption.value = guruh.fakultet.id;
+                fakultetOption.textContent = guruh.fakultet.nomi;
+                fakultetSelect.appendChild(fakultetOption);
+            } catch (error) {
+                console.error('Xatolik:', error);
+            }
+        }
+
+        document.getElementById('guruhForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+
+            const updatedGuruh = {
+                nomi: document.getElementById('nomi').value,
+                fakultet: document.getElementById('fakultet').value,
+                turi: document.getElementById('turi').value,
+            };
+
+            try {
+                const response = await fetch(`http://127.0.0.1:8000/api/guruhlar/${guruhId}/`, {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(updatedGuruh),
+                });
+
+                if (response.ok) {
+                    alert('✅ Guruh muvaffaqiyatli yangilandi!');
+                    window.location.href = 'guruhlar.html';
+                } else {
+                    alert('❌ Xatolik: Guruhni yangilashda muammo yuz berdi.');
+                }
+            } catch (error) {
+                console.error('Xatolik:', error);
+            }
+        });
+
+        async function deleteGuruh() {
+            if (confirm("Rostdan ham ushbu guruhni o'chirmoqchimisiz?")) {
+                try {
+                    const response = await fetch(`http://127.0.0.1:8000/api/guruhlar/${guruhId}/`, {
+                        method: 'DELETE',
+                    });
+
+                    if (response.ok) {
+                        alert('✅ Guruh o\'chirildi!');
+                        window.location.href = 'guruhlar.html';
+                    } else {
+                        alert('❌ Xatolik: Guruhni o\'chirishda muammo yuz berdi.');
+                    }
+                } catch (error) {
+                    console.error('Xatolik:', error);
+                }
+            }
+        }
+
+        loadGuruh();
+    </script>
+
+</body>
+</html>

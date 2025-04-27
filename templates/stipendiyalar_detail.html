@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+    <meta charset="UTF-8">
+    <title>Stipendiya Tafsilotlari</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 40px;
+            background-color: #f1f1f1;
+        }
+        h1 {
+            color: #333;
+        }
+        form {
+            background-color: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+        }
+        label {
+            display: block;
+            margin-top: 15px;
+            font-weight: bold;
+        }
+        input {
+            width: 100%;
+            padding: 8px;
+            margin-top: 5px;
+            border-radius: 5px;
+            border: 1px solid #ccc;
+        }
+        button {
+            margin-top: 20px;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+        }
+        .update-btn {
+            background-color: #007bff;
+            color: white;
+        }
+        .delete-btn {
+            background-color: #dc3545;
+            color: white;
+            margin-left: 10px;
+        }
+    </style>
+</head>
+<body>
+
+    <h1>🎓 Stipendiya tafsilotlari</h1>
+
+    <form id="stipendiyaForm">
+        <label for="nomi">Stipendiya nomi:</label>
+        <input type="text" id="nomi" name="nomi" required>
+
+        <label for="puli">Pul miqdori:</label>
+        <input type="number" id="puli" name="puli" step="0.01" required>
+
+        <label for="muddati">Muddati:</label>
+        <input type="text" id="muddati" name="muddati" required>
+
+        <button type="submit" class="update-btn">Saqlash</button>
+        <button type="button" class="delete-btn" onclick="deleteStipendiya()">O'chirish</button>
+    </form>
+
+    <script>
+        const params = new URLSearchParams(window.location.search);
+        const stipendiyaId = params.get('id');
+
+        async function loadStipendiya() {
+            try {
+                const response = await fetch(`http://127.0.0.1:8000/api/stipendiyalar/${stipendiyaId}/`);
+                const stipendiya = await response.json();
+
+                document.getElementById('nomi').value = stipendiya.nomi;
+                document.getElementById('puli').value = stipendiya.puli;
+                document.getElementById('muddati').value = stipendiya.muddati;
+
+            } catch (error) {
+                console.error('Xatolik:', error);
+            }
+        }
+
+        document.getElementById('stipendiyaForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+
+            const updatedStipendiya = {
+                nomi: document.getElementById('nomi').value,
+                puli: document.getElementById('puli').value,
+                muddati: document.getElementById('muddati').value,
+            };
+
+            try {
+                const response = await fetch(`http://127.0.0.1:8000/api/stipendiyalar/${stipendiyaId}/`, {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(updatedStipendiya),
+                });
+
+                if (response.ok) {
+                    alert('✅ Ma\'lumot saqlandi!');
+                    window.location.href = 'stipendiyalar.html';
+                } else {
+                    alert('❌ Xatolik: Saqlashda muammo yuz berdi.');
+                }
+
+            } catch (error) {
+                console.error('Xatolik:', error);
+            }
+        });
+
+        async function deleteStipendiya() {
+            if (confirm("Rostdan ham ushbu stipendiyani o'chirmoqchimisiz?")) {
+                try {
+                    const response = await fetch(`http://127.0.0.1:8000/api/stipendiyalar/${stipendiyaId}/`, {
+                        method: 'DELETE',
+                    });
+
+                    if (response.ok) {
+                        alert('✅ Stipendiya o\'chirildi!');
+                        window.location.href = 'stipendiyalar.html';
+                    } else {
+                        alert('❌ Xatolik: O\'chirishda muammo yuz berdi.');
+                    }
+                } catch (error) {
+                    console.error('Xatolik:', error);
+                }
+            }
+        }
+
+        loadStipendiya();
+    </script>
+
+</body>
+</html>

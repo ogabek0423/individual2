@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Universitet Dashboard</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+        body {
+            display: flex;
+            min-height: 100vh;
+            font-family: Arial, sans-serif;
+            background-color: #f8f9fa;
+        }
+        .sidebar {
+            width: 220px;
+            background-color: #007bff;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            color: white;
+        }
+        .sidebar a {
+            color: white;
+            text-decoration: none;
+            padding: 10px;
+            border-radius: 8px;
+            transition: background 0.3s;
+            background-color: rgba(255, 255, 255, 0.1);
+        }
+        .sidebar a:hover {
+            background-color: rgba(255, 255, 255, 0.3);
+        }
+        .main {
+            flex: 1;
+            padding: 40px;
+        }
+        h1 {
+            margin-bottom: 20px;
+            color: #333;
+        }
+        .charts {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 30px;
+            margin-top: 40px;
+        }
+        .chart-container {
+            background-color: white;
+            padding: 20px;
+            border-radius: 12px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+            width: 100%;
+            max-width: 400px;
+            height: 400px;
+            margin: auto;
+        }
+        canvas {
+            width: 100% !important;
+            height: 100% !important;
+        }
+        .dashboard-cards {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="sidebar">
+        <h2>🎓 Universitet</h2>
+        <a href="fakultetlar.html">Fakultetlar</a>
+        <a href="talabalar.html">Talabalar</a>
+        <a href="guruhlar.html">Guruhlar</a>
+        <a href="ustozlar.html">Ustozlar</a>
+        <a href="ilmiyfaoliyat.html">Ilmiy faoliyat</a>
+        <a href="stipendiyalar.html">Stipendiyalar</a>
+    </div>
+
+    <div class="main">
+        <h1>Dashboard</h1>
+        <div class="charts; dashboard-cards">
+            <div class="chart-container">
+                <canvas id="talabalarChart"></canvas>
+            </div>
+            <div class="chart-container">
+                <canvas id="stipendiyaChart"></canvas>
+            </div>
+            <div class="chart-container">
+                <canvas id="kontraktChart"></canvas>
+            </div>
+            <div class="chart-container">
+                <canvas id="tilChart"></canvas>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // 1. Talabalar soni fakultetlar kesimida
+        const talabalarChart = new Chart(document.getElementById('talabalarChart'), {
+            type: 'bar',
+            data: {
+                labels: ['DIF', 'KIF', 'AKT', 'RA', 'TLK'],
+                datasets: [{
+                    label: 'Talabalar soni',
+                    data: [200, 150, 100, 80, 60],
+                    backgroundColor: '#007bff'
+                }]
+            },
+            options: {
+                responsive: true,
+                plugins: {
+                    legend: { display: false },
+                    title: {
+                        display: true,
+                        text: 'Fakultetlar bo‘yicha talabalar soni'
+                    }
+                }
+            }
+        });
+
+        // 2. Stipendiya oluvchilar
+        const stipendiyaChart = new Chart(document.getElementById('stipendiyaChart'), {
+            type: 'doughnut',
+            data: {
+                labels: ['Oluvchilar', 'Olmaydiganlar'],
+                datasets: [{
+                    data: [65, 35],
+                    backgroundColor: ['#28a745', '#dc3545']
+                }]
+            },
+            options: {
+                responsive: true,
+                plugins: {
+                    title: {
+                        display: true,
+                        text: 'Stipendiya taqsimoti'
+                    }
+                }
+            }
+        });
+
+        // 3. Kontrakt / Grant / Superkontrakt
+        const kontraktChart = new Chart(document.getElementById('kontraktChart'), {
+            type: 'pie',
+            data: {
+                labels: ['Grant', 'Kontrakt', 'Superkontrakt'],
+                datasets: [{
+                    data: [40, 50, 10],
+                    backgroundColor: ['#ffc107', '#17a2b8', '#6f42c1']
+                }]
+            },
+            options: {
+                responsive: true,
+                plugins: {
+                    title: {
+                        display: true,
+                        text: 'Talabalar to‘lov shakli'
+                    }
+                }
+            }
+        });
+
+        // 4. O‘zbek / Rus / Ingliz guruhlar
+        const tilChart = new Chart(document.getElementById('tilChart'), {
+            type: 'bar',
+            data: {
+                labels: ['O‘zbek', 'Rus', 'Ingliz'],
+                datasets: [{
+                    label: 'Guruhlar soni',
+                    data: [120, 30, 15],
+                    backgroundColor: ['#007bff', '#dc3545', '#28a745']
+                }]
+            },
+            options: {
+                responsive: true,
+                plugins: {
+                    legend: { display: false },
+                    title: {
+                        display: true,
+                        text: 'Guruhlar tillar kesimida'
+                    }
+                }
+            }
+        });
+    </script>
+</body>
+</html>

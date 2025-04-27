@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+    <meta charset="UTF-8">
+    <title>Yangi Fakultet Qo‘shish</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 40px;
+            background-color: #f1f1f1;
+        }
+        h1 {
+            color: #333;
+        }
+        form {
+            background-color: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+        }
+        label {
+            display: block;
+            margin-top: 15px;
+            font-weight: bold;
+        }
+        input {
+            width: 100%;
+            padding: 8px;
+            margin-top: 5px;
+            border-radius: 5px;
+            border: 1px solid #ccc;
+        }
+        button {
+            margin-top: 20px;
+            padding: 10px 20px;
+            background-color: #28a745;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+
+    <h1>➕ Yangi Fakultet Qo‘shish</h1>
+
+    <form id="createFakultetForm">
+        <label for="nomi">Fakultet nomi:</label>
+        <input type="text" id="nomi" name="nomi" required>
+
+        <label for="yaratilgan_sana">Yaratilgan sana:</label>
+        <input type="date" id="yaratilgan_sana" name="yaratilgan_sana" required>
+
+        <label for="dekan">Dekan:</label>
+        <input type="text" id="dekan" name="dekan" required>
+
+        <label for="zam_dekan">Zam. dekan:</label>
+        <input type="text" id="zam_dekan" name="zam_dekan" required>
+
+        <button type="submit">Saqlash</button>
+    </form>
+
+    <script>
+        document.getElementById('createFakultetForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+
+            const yangiFakultet = {
+                nomi: document.getElementById('nomi').value,
+                yaratilgan_sana: document.getElementById('yaratilgan_sana').value,
+                dekan: document.getElementById('dekan').value,
+                zam_dekan: document.getElementById('zam_dekan').value,
+            };
+
+            try {
+                const response = await fetch('http://127.0.0.1:8000/api/fakultetlar/', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(yangiFakultet),
+                });
+
+                if (response.ok) {
+                    alert('✅ Fakultet muvaffaqiyatli qo‘shildi!');
+                    window.location.href = 'fakultetlar.html';
+                } else {
+                    alert('❌ Xatolik: Fakultet qo‘shilmadi.');
+                }
+            } catch (error) {
+                console.error('Xatolik:', error);
+            }
+        });
+    </script>
+
+</body>
+</html>

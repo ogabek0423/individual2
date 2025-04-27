@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+    <meta charset="UTF-8">
+    <title>Ustoz Tafsilotlari</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 40px;
+            background-color: #f1f1f1;
+        }
+        h1 {
+            color: #333;
+        }
+        .detail-container {
+            background-color: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+        }
+        .detail-item {
+            margin-bottom: 10px;
+        }
+        .button-group {
+            margin-top: 20px;
+        }
+        button {
+            padding: 10px 20px;
+            border-radius: 8px;
+            cursor: pointer;
+        }
+        .update-btn {
+            background-color: #007bff;
+            color: white;
+        }
+        .delete-btn {
+            background-color: #dc3545;
+            color: white;
+            margin-left: 10px;
+        }
+    </style>
+</head>
+<body>
+
+    <h1>👨‍🏫 Ustoz Tafsilotlari</h1>
+
+    <div id="ustozDetails" class="detail-container">
+        <!-- Ustoz tafsilotlari shu yerda ko‘rinadi -->
+    </div>
+
+    <div class="button-group">
+        <button class="update-btn" onclick="window.location.href='ustoz_create.html?id=' + ustozId">Tahrirlash</button>
+        <button class="delete-btn" onclick="deleteUstoz()">O‘chirish</button>
+    </div>
+
+    <script>
+        const params = new URLSearchParams(window.location.search);
+        const ustozId = params.get('id');
+
+        async function loadUstozDetails() {
+            try {
+                const response = await fetch(`http://127.0.0.1:8000/api/ustozlar/${ustozId}/`);
+                const ustoz = await response.json();
+
+                const details = document.getElementById('ustozDetails');
+                details.innerHTML = `
+                    <div class="detail-item"><strong>Ism:</strong> ${ustoz.ism}</div>
+                    <div class="detail-item"><strong>Familiya:</strong> ${ustoz.familiya}</div>
+                    <div class="detail-item"><strong>Mutaxassislik:</strong> ${ustoz.mutaxassislik}</div>
+                    <div class="detail-item"><strong>Yosh:</strong> ${ustoz.yosh}</div>
+                    <div class="detail-item"><strong>Daraja:</strong> ${ustoz.daraja}</div>
+                `;
+            } catch (error) {
+                console.error('Xatolik:', error);
+            }
+        }
+
+        async function deleteUstoz() {
+            if (confirm('Rostdan ham ushbu ustozni o‘chirmoqchimisiz?')) {
+                try {
+                    const response = await fetch(`http://127.0.0.1:8000/api/ustozlar/${ustozId}/`, {
+                        method: 'DELETE',
+                    });
+
+                    if (response.ok) {
+                        alert('✅ Ustoz o‘chirildi!');
+                        window.location.href = 'ustozlar.html';
+                    } else {
+                        alert('❌ Xatolik: O‘chirishda muammo yuz berdi.');
+                    }
+                } catch (error) {
+                    console.error('Xatolik:', error);
+                }
+            }
+        }
+
+        loadUstozDetails();
+    </script>
+
+</body>
+</html>

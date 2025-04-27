@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+    <meta charset="UTF-8">
+    <title>Yangi Guruh Qo‘shish</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 40px;
+            background-color: #f9f9f9;
+        }
+        h1 {
+            color: #333;
+        }
+        form {
+            background-color: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+        }
+        label {
+            display: block;
+            margin-top: 15px;
+            font-weight: bold;
+        }
+        input, select {
+            width: 100%;
+            padding: 8px;
+            margin-top: 5px;
+            border-radius: 5px;
+            border: 1px solid #ccc;
+        }
+        button {
+            margin-top: 20px;
+            padding: 10px 20px;
+            background-color: #28a745;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+
+    <h1>➕ Yangi Guruh Qo‘shish</h1>
+
+    <form id="createGuruhForm">
+        <label for="nomi">Guruh nomi:</label>
+        <input type="text" id="nomi" name="nomi" required>
+
+        <label for="fakultet">Fakultet:</label>
+        <select id="fakultet" name="fakultet" required>
+            <!-- Fakultetlar JS orqali yuklanadi -->
+        </select>
+
+        <label for="turi">Guruh turi:</label>
+        <input type="text" id="turi" name="turi" required>
+
+        <button type="submit">Saqlash</button>
+    </form>
+
+    <script>
+        // Fakultetlar ro'yxatini olish
+        async function loadFakultetlar() {
+            try {
+                const response = await fetch('http://127.0.0.1:8000/api/fakultetlar/');
+                const fakultetlar = await response.json();
+
+                const fakultetSelect = document.getElementById('fakultet');
+                fakultetlar.forEach(fakultet => {
+                    const option = document.createElement('option');
+                    option.value = fakultet.id;
+                    option.textContent = fakultet.nomi;
+                    fakultetSelect.appendChild(option);
+                });
+
+            } catch (error) {
+                console.error('Xatolik:', error);
+            }
+        }
+
+        // Guruh qo'shish formasi
+        document.getElementById('createGuruhForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+
+            const yangiGuruh = {
+                nomi: document.getElementById('nomi').value,
+                fakultet: document.getElementById('fakultet').value,
+                turi: document.getElementById('turi').value,
+            };
+
+            try {
+                const response = await fetch('http://127.0.0.1:8000/api/guruhlar/', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(yangiGuruh),
+                });
+
+                if (response.ok) {
+                    alert('✅ Guruh muvaffaqiyatli qo‘shildi!');
+                    window.location.href = 'guruhlar.html';
+                } else {
+                    alert('❌ Xatolik: Guruh qo‘shilmadi.');
+                }
+            } catch (error) {
+                console.error('Xatolik:', error);
+            }
+        });
+
+        // Fakultetlar ro‘yxatini yuklash
+        loadFakultetlar();
+    </script>
+
+</body>
+</html>

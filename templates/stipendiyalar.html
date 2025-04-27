@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+    <meta charset="UTF-8">
+    <title>Stipendiyalar</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 40px; background-color: #f1f1f1; }
+        h1 { color: #333; }
+        .top-bar { display: flex; justify-content: space-between; margin-bottom: 20px; }
+        button { background-color: #28a745; color: white; padding: 10px 20px; border: none; border-radius: 8px; cursor: pointer; }
+        button:hover { background-color: #218838; }
+        input[type="text"] { width: 300px; padding: 10px; border-radius: 8px; border: 1px solid #ccc; }
+        .stipendiya-list { background-color: white; padding: 20px; border-radius: 8px; box-shadow: 0 0 10px rgba(0,0,0,0.1); }
+        .stipendiya-item { margin-bottom: 10px; padding: 10px; background-color: #e9ecef; border-radius: 5px; }
+        .stipendiya-item a { text-decoration: none; color: #333; font-weight: bold; }
+    </style>
+</head>
+<body>
+
+<h1>🎓 Stipendiyalar</h1>
+
+<div class="top-bar">
+    <input type="text" id="searchInput" placeholder="🔍 Qidirish...">
+    <button onclick="window.location.href='stipendiyalar_create.html'">+ Yangi stipendiya qo‘shish</button>
+</div>
+
+<div id="stipendiyalar" class="stipendiya-list">
+    <!-- Stipendiyalar shu yerda ko‘rinadi -->
+</div>
+
+<script>
+    let allStipendiyalar = [];
+
+    async function loadStipendiyalar() {
+        try {
+            const response = await fetch('http://127.0.0.1:8000/api/stipendiyalar/');
+            allStipendiyalar = await response.json();
+            showStipendiyalar(allStipendiyalar);
+        } catch (error) {
+            console.error('Xatolik:', error);
+        }
+    }
+
+    function showStipendiyalar(stipendiyalar) {
+        const list = document.getElementById('stipendiyalar');
+        list.innerHTML = '';
+
+        stipendiyalar.forEach(stipendiya => {
+            const item = document.createElement('div');
+            item.className = 'stipendiya-item';
+            item.innerHTML = `
+                <a href="stipendiyalar_detail.html?id=${stipendiya.id}">
+                    ${stipendiya.nomi} - ${stipendiya.puli} so'm
+                </a>
+            `;
+            list.appendChild(item);
+        });
+    }
+
+    document.getElementById('searchInput').addEventListener('input', (e) => {
+        const keyword = e.target.value.toLowerCase();
+        const filtered = allStipendiyalar.filter(stip =>
+            stip.nomi.toLowerCase().includes(keyword)
+        );
+        showStipendiyalar(filtered);
+    });
+
+    loadStipendiyalar();
+</script>
+
+</body>
+</html>

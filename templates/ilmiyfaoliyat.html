@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+    <meta charset="UTF-8">
+    <title>Ilmiy Faoliyatlar</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 40px;
+            background-color: #f9f9f9;
+        }
+        h1 {
+            color: #333;
+        }
+        .top-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+        #searchBox {
+            width: 300px;
+            padding: 8px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+        button {
+            padding: 10px 20px;
+            background-color: #28a745;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #218838;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            background-color: white;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+        }
+        th, td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+        th {
+            background-color: #f2f2f2;
+        }
+        a.detail-link {
+            color: #007bff;
+            text-decoration: none;
+            font-weight: bold;
+        }
+        a.detail-link:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="top-bar">
+        <h1>📚 Ilmiy Faoliyatlar</h1>
+        <button onclick="window.location.href='ilmiy_create.html'">➕ Yangi ilmiy faoliyat qo‘shish</button>
+    </div>
+
+    <input type="text" id="searchBox" placeholder="🔍 Qidiruv..." onkeyup="searchIlmiy()">
+
+    <table id="ilmiyTable">
+        <thead>
+            <tr>
+                <th>Faoliyat nomi</th>
+                <th>Muallif</th>
+                <th>Turi</th>
+                <th>Amallar</th>
+            </tr>
+        </thead>
+        <tbody>
+            <!-- Ma'lumotlar JS orqali yuklanadi -->
+        </tbody>
+    </table>
+
+    <script>
+        async function loadIlmiyFaoliyatlar() {
+            try {
+                const response = await fetch('http://127.0.0.1:8000/api/ilmiyfaoliyatlar/');
+                const ilmiyFaoliyatlar = await response.json();
+
+                const tbody = document.querySelector('#ilmiyTable tbody');
+                tbody.innerHTML = '';
+
+                ilmiyFaoliyatlar.forEach(ilmiy => {
+                    const tr = document.createElement('tr');
+                    tr.innerHTML = `
+                        <td>${ilmiy.nomi}</td>
+                        <td>${ilmiy.muallif}</td>
+                        <td>${ilmiy.turi}</td>
+                        <td><a class="detail-link" href="ilmiyfaoliyat_detail.html?id=${ilmiy.id}">Ko'rish</a></td>
+                    `;
+                    tbody.appendChild(tr);
+                });
+
+            } catch (error) {
+                console.error('Xatolik:', error);
+            }
+        }
+
+        function searchIlmiy() {
+            const input = document.getElementById('searchBox').value.toLowerCase();
+            const rows = document.querySelectorAll('#ilmiyTable tbody tr');
+
+            rows.forEach(row => {
+                const text = row.textContent.toLowerCase();
+                row.style.display = text.includes(input) ? '' : 'none';
+            });
+        }
+
+        loadIlmiyFaoliyatlar();
+    </script>
+
+</body>
+</html>

@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+    <meta charset="UTF-8">
+    <title>Yangi Ilmiy Faoliyat Qo‘shish</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 40px;
+            background-color: #f1f1f1;
+        }
+        h1 {
+            color: #333;
+        }
+        form {
+            background-color: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+        }
+        label {
+            display: block;
+            margin-top: 15px;
+            font-weight: bold;
+        }
+        input, textarea {
+            width: 100%;
+            padding: 8px;
+            margin-top: 5px;
+            border-radius: 5px;
+            border: 1px solid #ccc;
+        }
+        button {
+            margin-top: 20px;
+            padding: 10px 20px;
+            background-color: #28a745;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+
+    <h1>➕ Yangi Ilmiy Faoliyat Qo‘shish</h1>
+
+    <form id="createIlmiyForm">
+        <label for="nomi">Faoliyat nomi:</label>
+        <input type="text" id="nomi" name="nomi" required>
+
+        <label for="muallif">Muallif:</label>
+        <input type="text" id="muallif" name="muallif" required>
+
+        <label for="turi">Turi:</label>
+        <input type="text" id="turi" name="turi" required>
+
+        <label for="izoh">Izoh:</label>
+        <textarea id="izoh" name="izoh" rows="4"></textarea>
+
+        <button type="submit">Saqlash</button>
+    </form>
+
+    <script>
+        document.getElementById('createIlmiyForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+
+            const yangiIlmiy = {
+                nomi: document.getElementById('nomi').value,
+                muallif: document.getElementById('muallif').value,
+                turi: document.getElementById('turi').value,
+                izoh: document.getElementById('izoh').value,
+            };
+
+            try {
+                const response = await fetch('http://127.0.0.1:8000/api/ilmiyfaoliyatlar/', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(yangiIlmiy),
+                });
+
+                if (response.ok) {
+                    alert('✅ Ilmiy faoliyat muvaffaqiyatli qo‘shildi!');
+                    window.location.href = 'ilmiyfaoliyat.html';
+                } else {
+                    alert('❌ Xatolik: Ilmiy faoliyat qo‘shilmadi.');
+                }
+            } catch (error) {
+                console.error('Xatolik:', error);
+            }
+        });
+    </script>
+
+</body>
+</html>
